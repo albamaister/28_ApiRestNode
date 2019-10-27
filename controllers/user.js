@@ -2,6 +2,7 @@
 var validator = require('validator');
 var User = require('../models/user');
 var bcrypt = require('bcrypt-nodejs');
+var jwt = require('../services/jwt');
 
 var controller = {
     probando: function(req, res) {
@@ -127,15 +128,22 @@ var controller = {
                 // Si es correcto
                 if (check) {
                     // Generar token de jwt y devolver (mas tarde)
+                    if (params.gettoken) {
+                        return res.status(200).send({
+                            token: jwt.createToken(user)
+                        });
+                    } else {
 
-                    // Limpiar el objeto
-                    user.password = undefined;
+                        // Limpiar el objeto
+                        user.password = undefined;
 
-                    // Devolver los datos
-                    return res.status(200).send({
-                        status: 'success',
-                        user
-                    });
+                        // Devolver los datos
+                        return res.status(200).send({
+                            status: 'success',
+                            user
+                        });
+                    }
+
                 } else {
                     return res.status(200).send({
                         message: 'Las credenciales no son correctas'
@@ -150,6 +158,14 @@ var controller = {
 
 
 
+    },
+
+    update: function(req, res) {
+        // Crear middleware para comprobar el jwt token, ponerselo a la ruta
+
+        return res.status(200).send({
+            message: 'Metodo de actualizacion de datos de usuario'
+        });
     }
 
 };
