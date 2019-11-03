@@ -1,4 +1,6 @@
 'use strict'
+var validator = require('validator');
+var Topic = require('../models/topic');
 
 var controller = {
     test: function(req, res) {
@@ -10,21 +12,56 @@ var controller = {
     save: function(req, res) {
 
         // Recoger parametros por post
+        var params = req.body;
 
         // Validar datos
+        try {
 
-        // Crear objeto guardar 
+            var validate_title = !validator.isEmpty(params.title);
+            var validate_content = !validator.isEmpty(params.content);
+            var validate_lang = !validator.isEmpty(params.lang);
 
-        // Asignar valores
+        } catch (err) {
+            return res.status(200).send({
+                message: 'Faltan datos por enviar'
+            });
+        }
 
-        // Guardar el topic 
+        if (validate_content && validate_title && validate_lang) {
 
-        // Devolver una respuesta
+            // Crear objeto guardar 
+            var topic = new Topic();
 
+            // Asignar valores
+            topic.title = params.title;
+            topic.content = params.content;
+            topic.code = params.code;
+            topic.lang = params.lang;
 
-        return res.status(200).send({
-            message: 'soy metodo pra guardar topic'
-        });
+            // Guardar el topic 
+            topic.save((err, topicStored) => {
+
+                if (err || !topicStored) {
+                    return res.status(404).send({
+                        status: 'error',
+                        message: 'El tema no se a guardado'
+                    });
+                }
+
+                return res.status(200).send({
+                    status: 'success',
+                    topic: topicStored
+                });
+            });
+
+            // Devolver una respuesta
+
+        } else {
+            return res.status(200).send({
+                message: 'Los datos no son validos'
+            });
+        }
+
     }
 }
 
