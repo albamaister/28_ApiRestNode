@@ -12,6 +12,13 @@ var UserSchema = new Schema({
     role: String
 });
 
+UserSchema.methods.toJSON = function() {
+    var obj = this.toObject();
+    delete obj.password;
+
+    return obj;
+}
+
 module.exports = mongoose.model('User', UserSchema);
 // Lowercae y pluralizar el nombre
 // users -> documents (schema)

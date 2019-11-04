@@ -109,6 +109,73 @@ var controller = {
             });
         });
 
+    },
+    getTopicsByUser: function(req, res) {
+
+        // Conseguir el id de usuario
+        var userId = req.params.user;
+
+        // Find con una condicion de usuario
+        Topic.find({
+                user: userId
+            })
+            .sort([
+                ['date', 'descending']
+            ])
+            .exec((err, topics) => {
+                if (err) {
+                    return res.status(500).send({
+                        status: 'error',
+                        message: 'Error en la peticion'
+                    });
+                }
+
+                if (!topics) {
+                    return res.status(404).send({
+                        status: 'error',
+                        message: 'No hay temas para mostrar'
+                    });
+                }
+
+                // Devolver un resultado
+
+
+                return res.status(200).send({
+                    status: 'success',
+                    topics: topics
+                });
+            });
+    },
+
+    getTopic: function(req, res) {
+
+        // Sacar id del topic de la url 
+        var topicId = req.params.id;
+        // Find por id del topic 
+        Topic.findById(topicId)
+            .populate('user')
+            .exec((err, topic) => {
+
+                if (err) {
+                    return res.status(500).send({
+                        status: 'error',
+                        message: 'Error en la peticion '
+                    });
+                }
+                if (!topic) {
+                    return res.status(404).send({
+                        status: 'error',
+                        message: 'No existe el topic'
+                    });
+                }
+                // devolver resultado
+                return res.status(200).send({
+                    status: 'success',
+                    topic
+                });
+            });
+
+
     }
 };
 
