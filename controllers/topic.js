@@ -37,6 +37,7 @@ var controller = {
             topic.content = params.content;
             topic.code = params.code;
             topic.lang = params.lang;
+            topic.user = req.user.sub;
 
             // Guardar el topic 
             topic.save((err, topicStored) => {
@@ -62,7 +63,53 @@ var controller = {
             });
         }
 
+    },
+
+    getTopics: function(req, res) {
+
+        // cargar la libreria de paginacion en la clase(EN EL MODELO)
+
+        // Recoger la pagina actual
+        if (req.params.page == null || req.params.page == "0" || req.params.page == undefined || req.params.page == false) {
+            var page = 1;
+        } else {
+            var page = parseInt(req.params.page);
+        }
+
+        // Indicar las opciones de paginacion
+        var options = {
+            sort: { date: -1 },
+            populate: 'user',
+            limit: 5,
+            page: page
+        }
+
+        // Find paginado
+        Topic.paginate({}, options, (err, topics) => {
+
+            if (err) {
+                return res.status(500).send({
+                    status: 'error',
+                    message: 'Error al hacer la consulta'
+                });
+            }
+            if (!topics) {
+                return res.status(404).send({
+                    status: 'error',
+                    message: 'No hay topics'
+                });
+            }
+
+            // Devolver resultado (topics, total de topics, total de paginas)
+            return res.status(200).send({
+                status: 'success',
+                topics: topics.docs,
+                totalDocs: topics.totalDocs,
+                totalPages: topics.totalPages
+            });
+        });
+
     }
-}
+};
 
 module.exports = controller;
