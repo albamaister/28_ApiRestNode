@@ -6,7 +6,7 @@ var Schema = mongoose.Schema;
 
 // Modelo de Comment
 var CommentSchema = new Schema({
-    comment: String,
+    content: String,
     date: { type: Date, default: Date.now },
     user: { type: Schema.ObjectId, ref: 'User' },
 });
